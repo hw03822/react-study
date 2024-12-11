@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <div id="root"></div>
+        <script type="text/babel">
+            const rootElement = document.getElementById("root");
+
+            // 03. 단일 element 생성하기
+            // const text = "Hello, world!";
+            // const titleClassName = "title";
+            // const props = {className : titleClassName, children : text};
+            // const element = <h1 {...props} />;
+            
+            // 04. 멀티 element 생성하기
+            // const element = (
+            //     <>
+            //         <h1>Hi</h1>
+            //         <h3>bye</h3>
+            //         <h5>children</h5>
+            //     </>
+            // );
+
+            // 05. 찍어내기
+            const Paint = ({ title, description, children }) => {
+                return (
+                    <>
+                        <h1>{title}</h1>
+                        <h3>{description}</h3>
+                        {children}
+                    </>
+                );
+            };
+            
+            // children을 받아줘야지 Paint안에 Paint를 넣을 수 있음
+            // const element = (
+            //     <>
+            //         <Paint title="Good" description="good">
+            //             <Paint title="Not Bad" description="not bad" />
+            //         </Paint>
+            //         <Paint title="Bad" description="bad" />
+            //         <Paint title="Soso" description="soso" />
+            //     </>
+            // );
+
+            // 06. js와 jsx 섞어쓰기
+            const Number = ({number, selected}) => {
+                return selected ? <h1>{number}</h1> : <h3>{number}</h3>
+            };
+
+            const element = (
+                <>
+                    {[1,2,3,4,5,6,7,8,9,10].map((number) => (
+                        <Number 
+                            className="title" 
+                            key={number} 
+                            number={number} 
+                            selected={number===3} 
+                        />
+                    ))}
+                </>
+            );
+
+            // react 18 버전은 이렇게 써줘야함
+            const root = ReactDOM.createRoot(rootElement);
+            root.render(element);
+        </script>
+        <style>
+            .title {
+                color: red;
+            }
+        </style>
+    </body>
+</html>
