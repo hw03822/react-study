@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <div id="root"></div>
+        <!--08.리랜더링 알아보기-->
+        <!--1.바닐라JS-->
+        <!-- <script>
+            const rootElement = document.getElementById("root");
+            function random() {
+                const number = Math.floor(Math.random() * (10-1)+1);
+                const element = `
+                    <button>${number}</button>
+                `;
+                rootElement.innerHTML = element;
+            }
+
+            setInterval(random, 1000);
+        </script> -->
+        <!--2.React-->
+        <script type="text/babel">
+            const rootElement = document.getElementById("root");
+            const root = ReactDOM.createRoot(rootElement);
+            
+            // 08. 리랜더링 알아보기
+            // function random() {
+            //     const number = Math.floor(Math.random() * (10-1)+1);
+            //     const element = (
+            //         <>
+            //             <button>{number}</button>
+            //         </>
+            //     );
+                
+            //     root.render(element);
+            // }
+
+            // setInterval(random, 1000);
+            
+            // 10. 이벤트 핸들러1
+            // const handleClick = () => alert("press");
+            // const handleMouseOut = () => alert("bye");
+
+            // const element = <button onClick={handleClick} onMouseOut={handleMouseOut}>
+            //     press
+            // </button>
+
+            // 11. 이벤트 핸들러 -> 13. 컴포넌트 상태 다루기
+            const App = () => {
+                const [keyword, setKeyword] = React.useState("");
+                const [typing, setTyping] = React.useState(false);
+
+                const inputChange = (event) => {
+                    setKeyword(event.target.value);
+                    setTyping(true);
+                };
+                const searchClick = () => {
+                   setTyping(false);
+                }
+
+                return (
+                    <>
+                        <input onChange={inputChange}/>
+                        <button onClick={searchClick}>Search</button>
+                        <p>
+                            {`Looking for ${keyword}...` }    
+                        </p>
+                    </>
+                );
+            };
+
+            root.render(<App />);
+
+            // react 18 버전은 이렇게 써줘야함
+            // const root = ReactDOM.createRoot(rootElement);
+            // root.render(<App />);
+
+
+
+        </script>
+    </body>
+</html>
