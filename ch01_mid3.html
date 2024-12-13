@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <div id="root"></div>
+   
+        <script type="text/babel">
+            const rootElement = document.getElementById("root");
+            const root = ReactDOM.createRoot(rootElement);
+            
+            // 13. 컴포넌트 상태 다루기
+            // const App = () => {
+            //     const [keyword, setKeyword] = React.useState("");
+            //     const [typing, setTyping] = React.useState(false);
+            //     const [result, setResult] = React.useState("");
+
+            //     const inputChange = (event) => {
+            //         setKeyword(event.target.value);
+            //         setTyping(true);
+            //     };
+            //     const searchClick = (event) => {
+            //        setTyping(false);
+            //        setResult(`We find result of ${keyword} !`);
+
+            //     }
+
+            //     return (
+            //         <>
+            //             <input onChange={inputChange}/>
+            //             <button onClick={searchClick}>Search</button>
+            //             <p>
+            //                 {typing ? `Looking for ${keyword}...` : result}    
+            //             </p>
+            //         </>
+            //     );
+            // };
+
+            // 14. 사이드 이펙트
+            // const App = () => {
+            //     const [keyword, setKeyword] = React.useState(() => {
+            //         return window.localStorage.getItem("keyword");
+            //     }); // I/O 하는 동안 딜레이가 생길수도 있음 -> 함수로 만들어서 딜레이 방지 해줌
+            //     const [typing, setTyping] = React.useState(false);
+            //     const [result, setResult] = React.useState("");
+                
+            //     // ㅇㅣ렇게하면 변경할 때 마다 로컬스토리지가 불림 -> 비효율적(지울때도, 버튼을 누를때도, 결과 문구가 바뀔때도)
+            //     // window.localStorage.setItem("keyword", keyword);
+            //     // keyword가 바뀔때만 저장하고 싶음 => useEffect 사용 
+            //     React.useEffect(() => {
+            //         window.localStorage.setItem("keyword", keyword);
+            //     }, [keyword]); // 두번째 인자 배열 dependency array 라 부름 
+            //     //                 => 두번째 인자를 안넣어 -> 모든 인자에 반응, 빈배열 -> 처음에 한 번만 반응
+
+            //     const inputChange = (event) => {
+            //         setKeyword(event.target.value);
+            //         setTyping(true);
+            //     };
+            //     const searchClick = (event) => {
+            //        setTyping(false);
+            //        setResult(`We find result of ${keyword} !`);
+            //     }
+
+            //     return (
+            //         <>
+            //             <input onChange={inputChange} value={keyword}/>
+            //             <button onClick={searchClick}>Search</button>
+            //             <p>
+            //                 {typing ? `Looking for ${keyword}...` : result}    
+            //             </p>
+            //         </>
+            //     );
+            // };
+
+            // 15. 커스텀 훅 만들기
+            // const useLocalStorage = (itemName, value="") => {
+            //     const [state, setState] = React.useState(() => {
+            //         return window.localStorage.getItem(itemName) || value;
+            //     }); 
+
+            //     React.useEffect(() => {
+            //         window.localStorage.setItem(itemName, state);
+            //     }, [state]);
+
+            //     return [state, setState];
+            // };
+            
+            // const App = () => {
+            //     const [keyword, setKeyword] = useLocalStorage("keyword");
+            //     const [result, setResult] = useLocalStorage("result");
+            //     const [typing, setTyping] = useLocalStorage("typing", false);
+
+            //     const inputChange = (event) => {
+            //         setKeyword(event.target.value);
+            //         setTyping(true);
+            //     };
+            //     const searchClick = () => {
+            //        setTyping(false);
+            //        setResult(`We find result of ${keyword} !`);
+            //     }
+
+            //     return (
+            //         <>
+            //             <input onChange={inputChange} value={keyword}/>
+            //             <button onClick={searchClick}>Search</button>
+            //             <p>
+            //                 {typing ? `Looking for ${keyword}...` : result}    
+            //             </p>
+            //         </>
+            //     );
+            // };
+
+            // 16-17. Hook flow 이해하기
+            const Child = () => {
+                console.log("  Child render start");
+                
+                const [text, setText] = React.useState(() => {
+                    console.log("  Child useState");
+                    return "";
+                });
+                
+                React.useEffect(() => {
+                    console.log("  Child useEffect, no deps");
+                    
+                    return () => {
+                        console.log("  Child useEffect [Cleanup], no deps");
+                    }
+                });
+                
+                React.useEffect(() => {
+                    console.log("  Child useEffect, empty deps");
+
+                    return () => {
+                        console.log("  Child useEffect [Cleanup], empty deps");
+                    }
+                }, []);
+
+                React.useEffect(() => {
+                    console.log("  Child useEffect, [text] deps");
+
+                    return () => {
+                        console.log("  Child useEffect [Cleanup], [text] deps");
+                    }
+                }, [text]);
+
+                const inputChange = (event) => {
+                    setText(event.target.value);
+                };
+
+                const element = (
+                    <>
+                        <input onChange={inputChange}/>
+                        <p>{text}</p>
+                    </>
+                );
+                console.log("  Chiled render end");
+                return element;
+            } 
+
+            const App = () => {
+                console.log("APP render start");
+
+                const [show, setShow] = React.useState(() => {
+                    console.log("APP useState");
+                    return false;
+                });
+
+                React.useEffect(() => {
+                    console.log("APP useEffect, no deps");
+                    
+                    return () => {
+                        console.log("APP useEffect [Cleanup], no deps");
+                    }
+                });
+                
+                React.useEffect(() => {
+                    console.log("APP useEffect, empty deps");
+
+                    return () => {
+                        console.log("APP useEffect [Cleanup], empty deps");
+                    }
+                }, []);
+
+                React.useEffect(() => {
+                    console.log("APP useEffect, [show] deps");
+
+                    return () => {
+                        console.log("APP useEffect [Cleanup], [show] deps");
+                    }
+                }, [show]);
+
+                const searchClick = () => {
+                    setShow((prev) => !prev);
+                }
+
+                console.log("APP render end");
+                return (
+                    <>
+                        <button onClick={searchClick}>Search</button>
+                        {show ? 
+                            <Child />
+                        : null}
+                    </>
+                );
+            };
+
+            root.render(<App />);
+
+            // react 18 버전은 이렇게 써줘야함
+            // const root = ReactDOM.createRoot(rootElement);
+            // root.render(<App />);
+        </script>
+    </body>
+</html>
