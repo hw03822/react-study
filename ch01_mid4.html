@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <div id="root"></div>
+        
+        <style>
+            .button {
+                background-color: #04AA6D; /* Green */
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                
+                }
+
+                .blue {background-color: #008CBA;} /* Blue */
+                .red {background-color: #f44336;} /* Red */ 
+                .grey {background-color: #e7e7e7; color: black;} /* Gray */ 
+                .balck {background-color: #555555;} /* Black */
+        </style>
+
+        <script type="text/babel">
+            const rootElement = document.getElementById("root");
+            const root = ReactDOM.createRoot(rootElement);
+            
+            // 19.리액트 elemnet에 스타일 입히기
+            // const Button = ({className = "", color, style, ...rest}) => {
+            //     return (
+            //         <button 
+            //             className={`button ${className}`}
+            //             style={{ backgroundColor: color, borderRadius: 8, ...style}}
+            //             {...rest}
+            //         /> // 매개변수로 넘겨줬으면 전부다 사용 해줘야함 아니면 안나타남
+            //         // 그리고 인라인으로 스타일을 정의해주면 그게 덮어써짐 
+            //     );
+            // };
+
+            // const element = (
+            //     <>
+            //         <Button style={{borderRadius : "50%"}}>Green</Button>
+            //         <Button color="blue">Blue</Button>
+            //         <Button color="red">Red</Button>
+            //         <Button color="grey">Gray</Button>
+            //         <Button color="balck">Black</Button>
+            //     </>
+            // );
+
+            // 20.Ref로 Dom 다루기
+            const App1 = () => {
+                const inputRef = React.useRef();
+                const divRef = React.useRef();
+                // ref 안에 객체에 다가갈려면 current를 통해서 접근해야 함
+                React.useEffect(() =>{
+                    inputRef.current.focus();
+
+                    setTimeout(() => {
+                        divRef.current.style.backgroundColor = "pink";
+                    }, 1000);
+                }, []);
+
+                return (
+                    <>
+                        <input ref={inputRef}/>
+                        <div
+                            ref={divRef}
+                            style={{ height:100, width:100, backgroundColor: "brown"}}
+                        />
+                    </>
+                );
+            };
+
+            // 21. Form 다루기
+            const App2 = () => {
+                const handleSubmit = (event) => {
+                    event.preventDefault();
+                    console.dir(event.target);
+                    alert(
+                        `fname: ${event.target.elements.fname.value}, lname: ${event.target.elements.lname.value}`
+                    );
+                };
+
+                return (
+                    <>
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="fname">First name:</label><br/>
+                        <input type="text" id="fname" name="fname" defaultValue="John"/><br/>
+                        <label htmlFor="lname">Last name:</label><br/>
+                        <input type="text" id="lname" name="lname" defaultValue="Doe"/><br/><br/>
+                        <input type="submit" value="Submit"/>
+                    </form> 
+                    </>
+                );
+            }
+
+            // 22. Form 다루기 2
+            const App3 = () => {
+                const [message, setMessage] = React.useState("");  
+                const [phoneNumber, setPhoneNumber] = React.useState("");
+
+                const handleSubmit = (event) => {
+                    event.preventDefault();
+                    alert(phoneNumber);
+                };
+
+                const handleChange = (event) => {
+                    if(event.target.value.startsWith(0)){
+                        setMessage("Phone Number is valid");
+                        setPhoneNumber(event.target.value);
+                    }else if (event.target.value.length === 0) { 
+                        setPhoneNumber("");
+                        setMessage("");
+                    }else {
+                        setMessage("Phone Number should starts with 0");
+                        setPhoneNumber("");
+                        
+                    }
+                };
+
+                return (
+                    <>
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="phone">Phone Number : </label>
+                            <br/>
+                            <input id="phone" name="phone" onChange={handleChange} value={phoneNumber}/>
+                            <br/>
+                            <p>{message}</p>
+                            <br/>
+                            <button 
+                                type="submit" 
+                                disabled={
+                                    phoneNumber === 0 || message !== "Phone Number is valid"
+                                }
+                            >
+                            Submit</button>
+                        </form>
+                    </>
+                );
+            };
+
+
+            // 23. Error 다루기
+            class ErrorBoundary extends React.Component {
+                state = {error : null};
+                static getDerivedStateFromError(error){
+                    return { error };
+                }
+
+                render() {
+                    const { error } = this.state;
+                    if(error) {
+                        return <this.props.fallback error={error} />;
+                    }
+                    return this.props.children;
+                }
+            }
+
+            const Child = () => {
+                throw new Error("Something wrong..");
+                return (
+                    <p> Child.. </p>
+                );
+            }
+
+            const Fallback = ({ error }) => {
+                alert(error.message);
+
+                return <p> THERE is some Error..</p>
+            }
+
+            const App = () => {
+                return (
+                    <>
+                        <p> App </p>
+                        <ErrorBoundary fallback={Fallback}>
+                            <Child />
+                        </ErrorBoundary>
+                    </>
+                );
+            };
+
+            root.render(<App />);
+
+            // react 18 버전은 이렇게 써줘야함
+            // const root = ReactDOM.createRoot(rootElement);
+            // root.render(<App />);
+        </script>
+    </body>
+</html>
