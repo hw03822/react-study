@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const rootElement = document.getElementById("root");
+            const root = ReactDOM.createRoot(rootElement);
+            
+            // 25-26. key와 리렌더링 알아보기 
+            const todos = [
+                [
+                    {id:1, value: "밥먹기"},
+                    {id:2, value: "숨쉬기"},
+                    {id:3, value: "자기"},
+                    {id:4, value: "놀기"},
+                ],
+                [
+                    {id:3, value: "자기"},
+                    {id:1, value: "밥먹기"},
+                    {id:2, value: "숨쉬기"},
+                    {id:4, value: "놀기"},
+                ],
+                [
+                    {id:2, value: "숨쉬기"},
+                    {id:1, value: "밥먹기"},
+                    {id:3, value: "자기"},
+                    {id:4, value: "놀기"},
+                ],
+                [
+                    {id:4, value: "놀기"},
+                    {id:1, value: "밥먹기"},
+                    {id:2, value: "숨쉬기"},
+                    {id:3, value: "자기"},
+                ],
+            ];
+
+            const App1 = () => {
+                const [items, setItems] = React.useState(todos[0]);
+                
+                React.useEffect(() => {
+                    const interval = setInterval(()=>{
+                        const random = Math.floor(Math.random() * 3);
+                        setItems(todos[random]);
+                    }, 1000);
+
+                    return () => {
+                        clearInterval(interval);
+                    };
+                }, []);
+
+                const handleDoneClick = (todo) => {
+                    setItems((items) => items.filter((item) => item !== todo));
+                };
+
+                const handleRestoreClick = () => {
+                    setItems((items) => [
+                        ...items,
+                        todos.find((item) => !items.includes(item))
+                    ]);
+                };
+
+                return (
+                    <>
+                        {items.map((todo) => (
+                            <div key={todo.id}>
+                                <button onClick={() => handleDoneClick(todo)}>{todo.value}</button>
+                            </div>
+                        ))}
+                        <button onClick={handleRestoreClick}>Restore</button>
+                    </>
+                );
+            };
+
+            // 27. 상태 끌어올리기
+            const Id = ({handleIdChange}) => {
+                return (
+                    <>
+                        <label htmlFor="id">ID: </label>
+                        <input id="id" name="id" onChange={handleIdChange}/>    
+                    </>
+                );
+            };
+
+            const Pw = ({handlePwChange}) => {
+                return (
+                    <>
+                        <label htmlFor="password">PW: </label>
+                        <input id="password" name="password" type="password" onChange={handlePwChange}/>
+                    </>
+                );
+            };
+
+            const App2 = () => {
+                const [id, setId] = React.useState("");
+                const [pw, setPw] = React.useState("");
+
+                const handleIdChange = (event) => {
+                    setId(event.target.value);
+                };
+
+                const handlePwChange = (event) => {
+                    setPw(event.target.value);
+                };
+
+                const handleLoginClick = () => {
+                    alert(`ID : ${id}, PW : ${pw}`);
+                };
+
+                return (
+                    <>
+                        <Id id={id} handleIdChange={handleIdChange}/>
+                        <br />
+                        <Pw id={pw} handlePwChange={handlePwChange}/>
+                        <button 
+                            disabled={id.length === 0 || pw.length === 0} 
+                            onClick={handleLoginClick}
+                        >
+                        Login
+                        </button>
+                        
+                    </>
+                );
+            }
+
+            // 28. fetch API
+            const App = () => {
+                const [data, setData] = React.useState(null);
+                const [error, setError] = React.useState(null);
+
+                React.useEffect(() => {
+                    fetch(
+                        "https://raw.githubusercontent.com/techoi/raw-data-api/main/simple-api.json"
+                    ).then(function(response){
+                        return response.json();
+                    }).then(function(myJson){
+                        setData(myJson.data);
+                    }).catch((error) => {
+                        setError(error);
+                    })
+                }, []);
+
+                if(error != null) {
+                    return <p>{error.message}</p>;
+                }
+
+                if(data == null) {
+                    return <p>Loading...</p>;
+                }
+
+                return (
+                    <div>
+                        <span>People</span>
+                        {data.people.map((people)=>(
+                            <div>
+                                <span>name: {people.name} </span>
+                                <span>age: {people.age}</span>
+                            </div>
+                        ))}
+                    </div>
+                );
+            };
+
+            root.render(<App />);
+
+            // react 18 버전은 이렇게 써줘야함
+            // const root = ReactDOM.createRoot(rootElement);
+            // root.render(<App />);
+        </script>
+    </body>
+</html>
