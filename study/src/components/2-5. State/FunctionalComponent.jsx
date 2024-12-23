@@ -7,10 +7,10 @@ export default function FunctionalComponent() {
         setDate(new Date());
     };
 
-    useEffect(() => {
-        const interval = setInterval(() => tick(), 1000);
+    useEffect(() => { //componentDidMount()
+        const interval = setInterval(() => tick(), 1000); 
 
-        return () => {
+        return () => { // componentWillUnmount
             clearInterval(interval);
         };
     }, []);
